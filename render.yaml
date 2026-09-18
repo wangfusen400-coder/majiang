@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: jin-mahjong-server
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --filter @jin/server...
+    startCommand: pnpm --filter @jin/server start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.1

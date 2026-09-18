@@ -1,0 +1,12 @@
+{
+  "name": "jin-mahjong",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "server": "pnpm --filter @jin/server start",
+    "mobile": "pnpm --filter @jin/mobile start",
+    "test": "node --test --test-isolation=none packages/game-core/test/*.test.js apps/server/test/*.test.js"
+  },
+  "engines": { "node": ">=18" }
+}

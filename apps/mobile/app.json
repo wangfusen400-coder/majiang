@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "晋麻·扣点点",
+    "slug": "jin-mahjong",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "com.jinmahjong.koudiandian",
+      "versionCode": 1,
+      "permissions": ["INTERNET"],
+      "adaptiveIcon": { "backgroundColor": "#082E27" }
+    },
+    "ios": { "bundleIdentifier": "com.jinmahjong.koudiandian", "supportsTablet": true },
+    "plugins": [],
+    "newArchEnabled": true
+  }
+}
