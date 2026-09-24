@@ -2,6 +2,8 @@
 
 一个可运行的山西扣点点好友房 MVP。仓库包含 Expo/React Native 手机端、Socket.IO 权威服务端，以及可复用、带测试的麻将规则核心。
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2Fwangfusen400-coder%2Fmajiang)
+
 ## 已实现
 
 - 4 人好友房：创建 6 位房间号、加入、准备、开局、断线自动重连
