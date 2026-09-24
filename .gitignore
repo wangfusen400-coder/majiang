@@ -5,5 +5,6 @@ dist/
 .env
 .DS_Store
 .pnpm-store/
+.gradle-local/
 /apps/mobile/android/
 /apps/mobile/ios/

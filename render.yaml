@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: jin-mahjong-server
+    name: jin-mahjong-kdd-20260918
     runtime: node
     plan: free
     region: singapore
