@@ -16,7 +16,7 @@
 
 公网服务：[`https://jin-mahjong-kdd.jin-mahjong.workers.dev`](https://jin-mahjong-kdd.jin-mahjong.workers.dev/health)
 
-Android 安装包：[下载 APK](https://github.com/wangfusen400-coder/majiang/releases/download/v0.1.0/jin-mahjong-kdd-0.1.0.apk)
+Android 安装包：[下载 APK](https://github.com/wangfusen400-coder/majiang/raw/refs/heads/main/dist/jin-mahjong-kdd-0.1.0.apk)
 
 ## 目录
 

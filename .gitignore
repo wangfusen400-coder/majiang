@@ -1,6 +1,7 @@
 node_modules/
 .expo/
-dist/
+dist/*
+!dist/jin-mahjong-kdd-0.1.0.apk
 *.log
 .env
 .DS_Store
