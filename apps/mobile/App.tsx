@@ -3,8 +3,8 @@ import {
   Alert, Modal, Platform, Pressable, SafeAreaView, ScrollView,
   StatusBar, StyleSheet, Text, TextInput, View
 } from 'react-native';
-import { io, Socket } from 'socket.io-client';
 import { DEFAULT_RULES, tileLabel } from '../../packages/game-core/index.js';
+import { connectGameSocket, GameSocket } from './src/gameSocket';
 
 const C = { ink: '#F6EEDB', muted: '#A8BDB5', green: '#0C493D', deep: '#061E1A', card: '#103B34', gold: '#E8B85C', red: '#DB675D', white: '#FFFDF6' };
 const defaultUrl = process.env.EXPO_PUBLIC_SERVER_URL
@@ -35,7 +35,7 @@ function SwitchRow({ label, value, onPress, description }: any) {
 }
 
 export default function App() {
-  const socketRef = useRef<Socket | null>(null);
+  const socketRef = useRef<GameSocket | null>(null);
   const playerId = useRef(`p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`);
   const roomCode = useRef('');
   const [screen, setScreen] = useState<'home' | 'create' | 'room'>('home');
@@ -51,12 +51,9 @@ export default function App() {
 
   const connect = () => {
     socketRef.current?.disconnect();
-    const socket = io(serverUrl.trim(), { transports: ['websocket'], timeout: 6000 });
+    const socket = connectGameSocket(serverUrl.trim());
     socketRef.current = socket;
     socket.on('state', (next) => { setState(next); setScreen('room'); setSelected(null); setDeclare(false); });
-    socket.on('connect', () => {
-      if (roomCode.current) socket.emit('resumeRoom', { code: roomCode.current, playerId: playerId.current });
-    });
     socket.on('connect_error', () => setBusy(false));
     return socket;
   };
@@ -75,13 +72,13 @@ export default function App() {
     if (!name.trim()) return Alert.alert('请先填写昵称');
     if (mode === 'join' && !/^\d{6}$/.test(joinCode)) return Alert.alert('请输入 6 位房间号');
     setBusy(true); const socket = connect();
-    socket.once('connect', () => socket.emit(mode === 'create' ? 'createRoom' : 'joinRoom', {
+    socket.enter(mode, {
       name: name.trim(), avatar, code: joinCode, rules, playerId: playerId.current
     }, (result: any) => {
       setBusy(false);
       if (!result?.ok) Alert.alert('无法进入房间', result?.error || '请检查服务器地址');
-      else roomCode.current = result.code;
-    }));
+      else { roomCode.current = result.code; playerId.current = result.playerId; }
+    });
   };
 
   if (screen === 'home') return <SafeAreaView style={s.page}><StatusBar barStyle="light-content" />

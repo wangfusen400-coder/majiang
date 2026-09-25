@@ -1,8 +1,6 @@
 # 晋麻·扣点点（Android 联机版）
 
-一个可运行的山西扣点点好友房 MVP。仓库包含 Expo/React Native 手机端、Socket.IO 权威服务端，以及可复用、带测试的麻将规则核心。
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2Fwangfusen400-coder%2Fmajiang)
+一个可运行的山西扣点点好友房 MVP。仓库包含 Expo/React Native 手机端、Cloudflare Workers 公网服务、Node.js 本地服务，以及可复用、带测试的麻将规则核心。
 
 ## 已实现
 
@@ -16,11 +14,16 @@
 - 4/8/12 局、带风、带庄、留七墩和大胡番型建房配置
 - Android APK 的 EAS 内测构建配置
 
+公网服务：[`https://jin-mahjong-kdd.jin-mahjong.workers.dev`](https://jin-mahjong-kdd.jin-mahjong.workers.dev/health)
+
+Android 安装包：[下载 APK](https://github.com/wangfusen400-coder/majiang/releases/download/v0.1.0/jin-mahjong-kdd-0.1.0.apk)
+
 ## 目录
 
 ```text
 apps/mobile       Expo 安卓/iOS 客户端
 apps/server       Node.js 联机服务
+apps/cloudflare-worker Cloudflare Workers + Durable Objects 公网服务
 packages/game-core 规则、牌型和计分核心
 ```
 
@@ -51,24 +54,31 @@ pnpm mobile
 $env:JAVA_HOME='D:\software\Java\jdk-17.0.20.1+1'
 $env:ANDROID_HOME='D:\software\Android'
 $env:GRADLE_USER_HOME='D:\software\Gradle'
-$env:EXPO_PUBLIC_SERVER_URL='https://你的服务.onrender.com'
+$env:EXPO_PUBLIC_SERVER_URL='https://jin-mahjong-kdd.jin-mahjong.workers.dev'
 Set-Location apps\mobile\android
 .\gradlew.bat assembleRelease
 ```
 
 构建产物位于 `apps/mobile/android/app/build/outputs/apk/release/app-release.apk`。当前为可直接侧载的内测 APK；正式上架应用商店前应改为独立发布签名并生成 AAB。
 
-## 部署服务端
+## 部署公网服务
 
-仓库根目录提供了 `render.yaml`，可在 Render Blueprint 中选择本仓库后免费部署。平台会自动读取端口、启动 Socket.IO 服务并通过 `/health` 检查健康状态。免费实例长时间无人访问后会休眠，首次连接可能需要等待几十秒唤醒。
+生产部署使用 Cloudflare Workers 与 Durable Objects。每个 6 位房间号对应一个独立 Durable Object，牌局状态持久化，实时连接使用可休眠 WebSocket；这避免了所有牌桌挤在同一个全局实例中。
 
-服务只依赖一个 `PORT` 环境变量，也适合部署到其他支持 Node.js 与 WebSocket 的平台：
+```powershell
+D:\software\Cloudflare\node_modules\.bin\wrangler.cmd login
+D:\software\Cloudflare\node_modules\.bin\wrangler.cmd deploy --config apps\cloudflare-worker\wrangler.jsonc
+```
+
+当前健康检查地址为 `https://jin-mahjong-kdd.jin-mahjong.workers.dev/health`。Cloudflare 免费额度和限制可能调整，请以控制台及官方定价页为准；项目本身未配置任何付费资源。
+
+本地开发仍可启动 Node.js 服务（只依赖 `PORT`）：
 
 ```bash
 PORT=3000 pnpm server
 ```
 
-生产环境应在反向代理开启 HTTPS/WSS，并设置进程守护。当前房间存于内存，单实例即可试玩；正式运营需增加 Redis 房间状态、数据库账号体系、短信/微信登录、观战审计与反作弊。
+本地 Node.js 服务的房间存于内存；Cloudflare 版本已持久化牌局。若正式商业运营，仍需增加账号体系、实名/隐私合规、观战审计和反作弊。
 
 ## 当前边界
 
@@ -83,4 +93,4 @@ PORT=3000 pnpm server
 pnpm test
 ```
 
-当前覆盖普通胡、字牌合法性、七对/听口、庄家与自摸计分。服务端同时可用 `node --check` 做语法检查。
+当前覆盖普通胡、字牌合法性、七对/听口、庄家与自摸计分、四人开局、持久化恢复及 WebSocket 消息协议。

@@ -1,10 +1,11 @@
-import { randomUUID } from 'node:crypto';
 import {
   DEFAULT_RULES, canHuByPoint, canWin, createWall, getWaits,
   scoreWin, shuffle, sortTiles, tilePoint
 } from '../../../packages/game-core/index.js';
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
+const randomUUID = () => globalThis.crypto?.randomUUID?.()
+  || `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
 const seatDistance = (from, seat) => (seat - from + 4) % 4;
 
 export class GameRoom {
@@ -21,6 +22,10 @@ export class GameRoom {
     this.pending = null;
     this.lastResult = null;
     this.addPlayer(owner);
+  }
+
+  static fromState(state) {
+    return Object.assign(Object.create(GameRoom.prototype), clone(state));
   }
 
   addPlayer({ id = randomUUID(), name, avatar = '🀄' }) {
