@@ -8,5 +8,6 @@ dist/*
 .pnpm-store/
 .gradle-local/
 .wrangler/
+/apps/cloudflare-worker/dist/
 /apps/mobile/android/
 /apps/mobile/ios/
